@@ -1,15 +1,21 @@
 import type { Agent, LogEvent, Task } from "./types";
 
-const spark = (base: number) =>
-  Array.from({ length: 28 }, (_, i) =>
+// Deterministic pseudo-random so server and client render identical
+// initial sparklines (avoids hydration mismatch). Live values take over
+// once the client simulation starts ticking.
+const spark = (base: number, seed: number) => {
+  let s = seed * 9301 + 49297;
+  const rnd = () => {
+    s = (s * 9301 + 49297) % 233280;
+    return s / 233280;
+  };
+  return Array.from({ length: 28 }, (_, i) =>
     Math.max(
       4,
-      Math.min(
-        100,
-        base + Math.sin(i / 2.2) * 14 + (Math.random() - 0.5) * 18,
-      ),
+      Math.min(100, base + Math.sin(i / 2.2) * 14 + (rnd() - 0.5) * 18),
     ),
   );
+};
 
 export const seedAgents: Agent[] = [
   {
@@ -24,7 +30,7 @@ export const seedAgents: Agent[] = [
     tokensPerMin: 4820,
     tasksDone: 1284,
     uptimeMins: 9421,
-    history: spark(70),
+    history: spark(70, 1),
     currentTask: "Routing sub-tasks across the fleet",
   },
   {
@@ -39,7 +45,7 @@ export const seedAgents: Agent[] = [
     tokensPerMin: 6140,
     tasksDone: 942,
     uptimeMins: 7720,
-    history: spark(80),
+    history: spark(80, 2),
     currentTask: "Refactoring the payments service",
   },
   {
@@ -54,7 +60,7 @@ export const seedAgents: Agent[] = [
     tokensPerMin: 3110,
     tasksDone: 2031,
     uptimeMins: 12880,
-    history: spark(52),
+    history: spark(52, 3),
     currentTask: "Scanning 41 sources on vector DBs",
   },
   {
@@ -69,7 +75,7 @@ export const seedAgents: Agent[] = [
     tokensPerMin: 880,
     tasksDone: 651,
     uptimeMins: 15402,
-    history: spark(24),
+    history: spark(24, 4),
     currentTask: "Standing by · watching deploys",
   },
   {
@@ -84,7 +90,7 @@ export const seedAgents: Agent[] = [
     tokensPerMin: 2440,
     tasksDone: 488,
     uptimeMins: 3120,
-    history: spark(60),
+    history: spark(60, 5),
     currentTask: "Drafting launch copy variants",
   },
   {
@@ -99,7 +105,7 @@ export const seedAgents: Agent[] = [
     tokensPerMin: 0,
     tasksDone: 1770,
     uptimeMins: 6210,
-    history: spark(12),
+    history: spark(12, 6),
     currentTask: "Paused by operator",
   },
 ];

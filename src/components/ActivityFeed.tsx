@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useMission } from "@/lib/store";
 import { logColor } from "@/lib/theme";
 import { SectionHeader } from "./AgentGrid";
+import { useMounted } from "./primitives";
 
 function ago(time: number) {
   const s = Math.floor((Date.now() - time) / 1000);
@@ -16,6 +17,7 @@ function ago(time: number) {
 
 export function ActivityFeed() {
   const { logs, agents } = useMission();
+  const mounted = useMounted();
   const nameOf = (id?: string) => agents.find((a) => a.id === id)?.name;
 
   return (
@@ -58,7 +60,9 @@ export function ActivityFeed() {
                         </>
                       )}
                       <span>·</span>
-                      <span>{ago(ev.time)}</span>
+                      <span suppressHydrationWarning>
+                        {mounted ? ago(ev.time) : "—"}
+                      </span>
                     </div>
                   </div>
                 </motion.div>

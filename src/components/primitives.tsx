@@ -1,7 +1,18 @@
 "use client";
 
 import { animate, motion, useMotionValue, useTransform } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+
+/** True only after the first client mount — use to gate time/random-derived
+ *  rendering so it never runs during SSR (prevents hydration mismatch). */
+export function useMounted() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    const mark = () => setMounted(true);
+    mark();
+  }, []);
+  return mounted;
+}
 
 export function AnimatedNumber({
   value,

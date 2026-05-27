@@ -8,6 +8,7 @@ import { AgentGrid } from "./AgentGrid";
 import { Background } from "./Background";
 import { CommandPalette } from "./CommandPalette";
 import { OrbitView } from "./OrbitView";
+import { useMounted } from "./primitives";
 import { Sidebar } from "./Sidebar";
 import { StatCards } from "./StatCards";
 import { TaskQueue } from "./TaskQueue";
@@ -15,9 +16,12 @@ import { TelemetryPanel } from "./TelemetryPanel";
 import { TopBar } from "./TopBar";
 
 function Hero() {
+  const mounted = useMounted();
   const hour = new Date().getHours();
-  const greeting =
+  const timed =
     hour < 5 ? "Burning the midnight oil" : hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  // Stable text on server + first paint; localized greeting after mount.
+  const greeting = mounted ? timed : "Welcome back";
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -26,7 +30,10 @@ function Hero() {
       className="flex flex-wrap items-end justify-between gap-4"
     >
       <div>
-        <p className="font-mono text-xs uppercase tracking-[0.22em] text-cyan/80">
+        <p
+          className="font-mono text-xs uppercase tracking-[0.22em] text-cyan/80"
+          suppressHydrationWarning
+        >
           {greeting}, Commander
         </p>
         <h1 className="mt-1 bg-gradient-to-r from-white via-ink to-violet/80 bg-clip-text text-3xl font-bold tracking-tight text-transparent sm:text-4xl">
